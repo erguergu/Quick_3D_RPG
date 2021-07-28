@@ -90,6 +90,8 @@ export const spatial_hash_grid = (() => {
     _Insert(client) {
       const [x, y] = client.position;
       const [w, h] = client.dimensions;
+
+      console.log(`Inserting a new ${w}x${h} grid at ${x}, ${y}!!!`);
   
       const i1 = this._GetCellIndex([x - w / 2, y - h / 2]);
       const i2 = this._GetCellIndex([x + w / 2, y + h / 2]);

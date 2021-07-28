@@ -52,6 +52,32 @@ class HackNSlashDemo {
   }
 
   _Initialize() {
+
+    this._scene = new THREE.Scene();
+    this._scene.background = new THREE.Color(0xFFFFFF);
+    this._scene.fog = new THREE.FogExp2(0x89b2eb, 0.002);
+
+    this._entityManager = new entity_manager.EntityManager();
+    this._grid = new spatial_hash_grid.SpatialHashGrid(
+        [[-1000, -1000], [1000, 1000]], [100, 100]);
+
+    this._ThreeInit();
+    this._LoadCamera();
+    this._LoadLights();
+    this._LoadGround();
+    this._LoadControllers();
+    this._LoadPlayer();
+    this._LoadNPCs();
+    this._LoadMonsters();
+    this._LoadFoliage();
+    this._LoadClouds();
+    this._LoadSky();
+
+    this._previousRAF = null;
+    this._RAF();
+  }
+
+  _ThreeInit() {
     this._threejs = new THREE.WebGLRenderer({
       antialias: true,
     });
@@ -68,6 +94,9 @@ class HackNSlashDemo {
     window.addEventListener('resize', () => {
       this._OnWindowResize();
     }, false);
+  }
+
+  _LoadCamera () {
 
     const fov = 60;
     const aspect = 1920 / 1080;
@@ -75,10 +104,9 @@ class HackNSlashDemo {
     const far = 10000.0;
     this._camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     this._camera.position.set(25, 10, 25);
+  }
 
-    this._scene = new THREE.Scene();
-    this._scene.background = new THREE.Color(0xFFFFFF);
-    this._scene.fog = new THREE.FogExp2(0x89b2eb, 0.002);
+  _LoadLights () {
 
     let light = new THREE.DirectionalLight(0xFFFFFF, 1.0);
     light.position.set(-10, 500, 10);
@@ -96,6 +124,9 @@ class HackNSlashDemo {
     this._scene.add(light);
 
     this._sun = light;
+  }
+
+  _LoadGround () {
 
     const plane = new THREE.Mesh(
         new THREE.PlaneGeometry(5000, 5000, 10, 10),
@@ -106,19 +137,6 @@ class HackNSlashDemo {
     plane.receiveShadow = true;
     plane.rotation.x = -Math.PI / 2;
     this._scene.add(plane);
-
-    this._entityManager = new entity_manager.EntityManager();
-    this._grid = new spatial_hash_grid.SpatialHashGrid(
-        [[-1000, -1000], [1000, 1000]], [100, 100]);
-
-    this._LoadControllers();
-    this._LoadPlayer();
-    this._LoadFoliage();
-    this._LoadClouds();
-    this._LoadSky();
-
-    this._previousRAF = null;
-    this._RAF();
   }
 
   _LoadControllers() {
@@ -179,7 +197,8 @@ class HackNSlashDemo {
   }
 
   _LoadFoliage() {
-    for (let i = 0; i < 100; ++i) {
+    const numFoliage = 10;
+    for (let i = 0; i < numFoliage; ++i) {
       const names = [
           'CommonTree_Dead', 'CommonTree',
           'BirchTree', 'BirchTree_Dead',
@@ -250,24 +269,6 @@ class HackNSlashDemo {
     }));
     this._entityManager.Add(sword);
 
-    const girl = new entity.Entity();
-    girl.AddComponent(new gltf_component.AnimatedModelComponent({
-        scene: this._scene,
-        resourcePath: './resources/girl/',
-        resourceName: 'peasant_girl.fbx',
-        resourceAnimation: 'Standing Idle.fbx',
-        scale: 0.035,
-        receiveShadow: true,
-        castShadow: true,
-    }));
-    girl.AddComponent(new spatial_grid_controller.SpatialGridController({
-        grid: this._grid,
-    }));
-    girl.AddComponent(new player_input.PickableComponent());
-    girl.AddComponent(new quest_component.QuestComponent());
-    girl.SetPosition(new THREE.Vector3(30, 0, 0));
-    this._entityManager.Add(girl);
-
     const player = new entity.Entity();
     player.AddComponent(new player_input.BasicCharacterControllerInput(params));
     player.AddComponent(new player_entity.BasicCharacterController(params));
@@ -314,8 +315,33 @@ class HackNSlashDemo {
             camera: this._camera,
             target: this._entityManager.Get('player')}));
     this._entityManager.Add(camera, 'player-camera');
+  }
 
-    for (let i = 0; i < 50; ++i) {
+  _LoadNPCs () {
+
+    const girl = new entity.Entity();
+    girl.AddComponent(new gltf_component.AnimatedModelComponent({
+        scene: this._scene,
+        resourcePath: './resources/girl/',
+        resourceName: 'peasant_girl.fbx',
+        resourceAnimation: 'Standing Idle.fbx',
+        scale: 0.035,
+        receiveShadow: true,
+        castShadow: true,
+    }));
+    girl.AddComponent(new spatial_grid_controller.SpatialGridController({
+        grid: this._grid,
+    }));
+    girl.AddComponent(new player_input.PickableComponent());
+    girl.AddComponent(new quest_component.QuestComponent());
+    girl.SetPosition(new THREE.Vector3(30, 0, 0));
+    this._entityManager.Add(girl);
+  }
+
+  _LoadMonsters () {
+
+    const numMonsters = 1;
+    for (let i = 0; i < numMonsters; ++i) {
       const monsters = [
         {
           resourceName: 'Ghost.fbx',
