@@ -49,7 +49,7 @@ export const player_input = (() => {
 
     _onClick(event) {
       event.preventDefault();
-      console.log(`You clicked!`);
+      //console.log(`You clicked!`);
       return false;
     }
 
@@ -57,7 +57,7 @@ export const player_input = (() => {
       event.preventDefault();
       this._mouseMovementX = event.movementX;
       this._mouseMovementY = event.movementY;
-      console.log(`_onMouseMove`, event);
+      //console.log(`_onMouseMove`, event);
       return false;
     }
 

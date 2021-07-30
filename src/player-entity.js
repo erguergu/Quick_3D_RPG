@@ -45,6 +45,9 @@ export const player_entity = (() => {
     _Init(params) {
       this._params = params;
       this._camera = params._camera;
+      this._IsFreeLook = false;
+      this._WasFreeLook = false;
+      this._FreeLookQuaternion = new THREE.Quaternion();
       this._decceleration = new THREE.Vector3(-0.0005, -0.0001, -5.0);
       this._acceleration = new THREE.Vector3(1, 0.125, 50.0);
       this._velocity = new THREE.Vector3(0, 0, 0);
@@ -189,6 +192,10 @@ export const player_entity = (() => {
       const _Q = new THREE.Quaternion();
       const _A = new THREE.Vector3();
       const _R = controlObject.quaternion.clone();
+      
+      const _QFreeLook = new THREE.Quaternion();
+      const _AFreeLook = new THREE.Vector3();
+      const _RFreeLook = this._FreeLookQuaternion.clone();
   
       const acc = this._acceleration.clone();
       if (input._keys.shift) {
@@ -201,6 +208,23 @@ export const player_entity = (() => {
       if (input._keys.backward) {
         velocity.z -= acc.z * timeInSeconds;
       }
+
+      this._WasFreeLook = this._IsFreeLook;
+      if (input._mouseDownRight) {
+        // both could be down, or just right could be down
+        this._IsFreeLook = false;
+      }
+      else if (input._mouseDownLeft) {
+        // ONLY left is down
+        this._IsFreeLook = true;
+      }
+
+      if (this._IsFreeLook != this._WasFreeLook) {
+        // Player Update Fires before Camera Update
+        // console.log(`Player: _WasFreeLook = ${this._WasFreeLook}`);
+        // console.log(`Player: _IsFreeLook = ${this._IsFreeLook}`);
+      }
+
       if (input._mouseDownRight) {
         if (input._mouseMovementX) {
           const xMove = input._mouseMovementX * -.01;
@@ -210,6 +234,16 @@ export const player_entity = (() => {
           input._mouseMovementX = 0;
         }
       } else {
+
+        if (input._mouseDownLeft) {
+          if (input._mouseMovementX) {
+            const xMove = input._mouseMovementX * -.01;
+            _AFreeLook.set(0, 1, 0);
+            _QFreeLook.setFromAxisAngle(_AFreeLook, 4.0 * Math.PI * xMove * this._acceleration.y);
+            _RFreeLook.multiply(_QFreeLook);
+            input._mouseMovementX = 0;
+          }
+        }
 
         if (input._keys.left) {
           _A.set(0, 1, 0);
@@ -224,6 +258,7 @@ export const player_entity = (() => {
       }
   
       controlObject.quaternion.copy(_R);
+      this._FreeLookQuaternion.copy(_RFreeLook);
   
       const oldPosition = new THREE.Vector3();
       oldPosition.copy(controlObject.position);

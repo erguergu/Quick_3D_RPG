@@ -313,7 +313,7 @@ class HackNSlashDemo {
     camera.AddComponent(
         new player_camera.PlayerCamera({
             camera: this._camera,
-            target: this._entityManager.Get('player')}));
+            playerEntity: this._entityManager.Get('player')}));
     this._entityManager.Add(camera, 'player-camera');
   }
 
