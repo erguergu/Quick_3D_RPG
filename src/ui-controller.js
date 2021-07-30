@@ -61,27 +61,27 @@ export const ui_controller = (() => {
     }
 
     _HideUI() {
-      this._ui.inventory.style.visibility = 'hidden';
-      this._ui.stats.style.visibility = 'hidden';
-      this._ui.quests.style.visibility = 'hidden';
+      this._ui.inventory.className = 'hidden';
+      this._ui.stats.className = 'hidden';
+      this._ui.quests.className = 'hidden';
     }
     
     _OnQuestsClicked(msg) {
-      const visibility = this._ui.quests.style.visibility;
+      const className = this._ui.quests.className;
       this._HideUI();
-      this._ui.quests.style.visibility = (visibility ? '' : 'hidden');
+      this._ui.quests.className = (className ? '' : 'hidden');
     }
 
     _OnStatsClicked(msg) {
-      const visibility = this._ui.stats.style.visibility;
+      const className = this._ui.stats.className;
       this._HideUI();
-      this._ui.stats.style.visibility = (visibility ? '' : 'hidden');
+      this._ui.stats.className = (className ? '' : 'hidden');
     }
 
     _OnInventoryClicked(msg) {
-      const visibility = this._ui.inventory.style.visibility;
+      const className = this._ui.inventory.className;
       this._HideUI();
-      this._ui.inventory.style.visibility = (visibility ? '' : 'hidden');
+      this._ui.inventory.className = (className ? '' : 'hidden');
     }
 
     Update(timeInSeconds) {

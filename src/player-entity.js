@@ -44,6 +44,7 @@ export const player_entity = (() => {
 
     _Init(params) {
       this._params = params;
+      this._camera = params._camera;
       this._decceleration = new THREE.Vector3(-0.0005, -0.0001, -5.0);
       this._acceleration = new THREE.Vector3(1, 0.125, 50.0);
       this._velocity = new THREE.Vector3(0, 0, 0);
@@ -194,21 +195,32 @@ export const player_entity = (() => {
         acc.multiplyScalar(2.0);
       }
   
-      if (input._keys.forward) {
+      if (input._keys.forward || input._keys.mouseforward) {
         velocity.z += acc.z * timeInSeconds;
       }
       if (input._keys.backward) {
         velocity.z -= acc.z * timeInSeconds;
       }
-      if (input._keys.left) {
-        _A.set(0, 1, 0);
-        _Q.setFromAxisAngle(_A, 4.0 * Math.PI * timeInSeconds * this._acceleration.y);
-        _R.multiply(_Q);
-      }
-      if (input._keys.right) {
-        _A.set(0, 1, 0);
-        _Q.setFromAxisAngle(_A, 4.0 * -Math.PI * timeInSeconds * this._acceleration.y);
-        _R.multiply(_Q);
+      if (input._mouseDownRight) {
+        if (input._mouseMovementX) {
+          const xMove = input._mouseMovementX * -.01;
+          _A.set(0, 1, 0);
+          _Q.setFromAxisAngle(_A, 4.0 * Math.PI * xMove * this._acceleration.y);
+          _R.multiply(_Q);
+          input._mouseMovementX = 0;
+        }
+      } else {
+
+        if (input._keys.left) {
+          _A.set(0, 1, 0);
+          _Q.setFromAxisAngle(_A, 4.0 * Math.PI * timeInSeconds * this._acceleration.y);
+          _R.multiply(_Q);
+        }
+        if (input._keys.right) {
+          _A.set(0, 1, 0);
+          _Q.setFromAxisAngle(_A, 4.0 * -Math.PI * timeInSeconds * this._acceleration.y);
+          _R.multiply(_Q);
+        }
       }
   
       controlObject.quaternion.copy(_R);

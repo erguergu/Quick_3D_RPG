@@ -135,7 +135,7 @@ export const player_state = (() => {
     }
   
     Update(timeElapsed, input) {
-      if (input._keys.forward || input._keys.backward) {
+      if (input._keys.forward || input._keys.backward || input._keys.mouseforward) {
         if (input._keys.shift) {
           this._parent.SetState('run');
         }
@@ -183,7 +183,7 @@ export const player_state = (() => {
     }
   
     Update(timeElapsed, input) {
-      if (input._keys.forward || input._keys.backward) {
+      if (input._keys.forward || input._keys.backward || input._keys.mouseforward) {
         if (!input._keys.shift) {
           this._parent.SetState('walk');
         }
@@ -223,7 +223,7 @@ export const player_state = (() => {
     }
   
     Update(_, input) {
-      if (input._keys.forward || input._keys.backward) {
+      if (input._keys.forward || input._keys.backward || input._keys.mouseforward) {
         this._parent.SetState('walk');
       } else if (input._keys.space) {
         this._parent.SetState('attack');

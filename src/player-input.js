@@ -22,7 +22,12 @@ export const player_input = (() => {
     }
   
     _Init() {
+      this._mouseMovementX = 0;
+      this._mouseMovementY = 0;
+      this._mouseDownLeft = false;
+      this._mouseDownRight = false;
       this._keys = {
+        mouseforward: false,
         forward: false,
         backward: false,
         left: false,
@@ -31,12 +36,59 @@ export const player_input = (() => {
         shift: false,
       };
       this._raycaster = new THREE.Raycaster();
+      const canv = document.getElementById('threejs');
       document.addEventListener('keydown', (e) => this._onKeyDown(e), false);
       document.addEventListener('keyup', (e) => this._onKeyUp(e), false);
-      document.addEventListener('mouseup', (e) => this._onMouseUp(e), false);
+      canv.addEventListener('mouseup', (e) => this._onMouseUp(e), false);
+      canv.addEventListener('mousedown', (e) => this._onMouseDown(e), false);
+      canv.addEventListener('mousemove', (e) => this._onMouseMove(e), false);
+      canv.addEventListener('contextmenu', event => event.preventDefault());
+      console.log(`The canvas is:`, canv);
+      canv.addEventListener("click", (e) => this._onClick(e), false);
+    }
+
+    _onClick(event) {
+      event.preventDefault();
+      console.log(`You clicked!`);
+      return false;
+    }
+
+    _onMouseMove(event) {
+      event.preventDefault();
+      this._mouseMovementX = event.movementX;
+      this._mouseMovementY = event.movementY;
+      console.log(`_onMouseMove`, event);
+      return false;
+    }
+
+    _onMouseDown(event) {
+      event.preventDefault();
+
+      if (event.button == 0) {
+        this._mouseDownLeft = true;
+      } else if (event.button == 2) {
+        this._mouseDownRight = true;
+      }
+
+      if (this._mouseDownLeft && this._mouseDownRight) {
+        this._keys.mouseforward = true;
+      }
+      return false;
     }
   
     _onMouseUp(event) {
+      event.preventDefault();
+
+      if (event.button == 0) {
+        this._mouseDownLeft = false;
+      } else if (event.button == 2) {
+        this._mouseDownRight = false;
+      }
+
+      if (!this._mouseDownLeft || !this._mouseDownRight) {
+        this._keys.mouseforward = false;
+      }
+
       const rect = document.getElementById('threejs').getBoundingClientRect();
       const pos = {
         x: ((event.clientX - rect.left) / rect.width) * 2  - 1,
@@ -59,7 +111,7 @@ export const player_input = (() => {
           this._params.camera).sub(ray.origin).normalize();
 
       // hack
-      document.getElementById('quest-ui').style.visibility = 'hidden';
+      document.getElementById('quest-ui').style.display = 'none';
 
       for (let p of pickables) {
         // GOOD ENOUGH
@@ -119,6 +171,7 @@ export const player_input = (() => {
           break;
       }
     }
+
   };
 
   return {

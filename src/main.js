@@ -1,6 +1,6 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118.1/build/three.module.js';
 
-import {third_person_camera} from './third-person-camera.js';
+import {player_camera} from './player-camera.js';
 import {entity_manager} from './entity-manager.js';
 import {player_entity} from './player-entity.js'
 import {entity} from './entity.js';
@@ -103,7 +103,7 @@ class HackNSlashDemo {
     const near = 1.0;
     const far = 10000.0;
     this._camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    this._camera.position.set(25, 10, 25);
+    //this._camera.position.set(25, 10, 25);
   }
 
   _LoadLights () {
@@ -131,7 +131,7 @@ class HackNSlashDemo {
     const plane = new THREE.Mesh(
         new THREE.PlaneGeometry(5000, 5000, 10, 10),
         new THREE.MeshStandardMaterial({
-            color: 0x1e601c,
+            color: 0x006700,
           }));
     plane.castShadow = false;
     plane.receiveShadow = true;
@@ -311,7 +311,7 @@ class HackNSlashDemo {
 
     const camera = new entity.Entity();
     camera.AddComponent(
-        new third_person_camera.ThirdPersonCamera({
+        new player_camera.PlayerCamera({
             camera: this._camera,
             target: this._entityManager.Get('player')}));
     this._entityManager.Add(camera, 'player-camera');
