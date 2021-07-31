@@ -26,6 +26,7 @@ export const player_input = (() => {
       this._mouseMovementY = 0;
       this._mouseDownLeft = false;
       this._mouseDownRight = false;
+      this._wheelDelta = 0;
       this._keys = {
         mouseforward: false,
         forward: false,
@@ -43,14 +44,18 @@ export const player_input = (() => {
       canv.addEventListener('mousedown', (e) => this._onMouseDown(e), false);
       canv.addEventListener('mousemove', (e) => this._onMouseMove(e), false);
       canv.addEventListener('contextmenu', event => event.preventDefault());
+      canv.addEventListener('wheel', (e) => this._onMouseWheel(e), false);
       console.log(`The canvas is:`, canv);
       canv.addEventListener("click", (e) => this._onClick(e), false);
     }
 
     _onClick(event) {
       event.preventDefault();
-      //console.log(`You clicked!`);
       return false;
+    }
+
+    _onMouseWheel(event) {
+      this._wheelDelta = event.wheelDelta;
     }
 
     _onMouseMove(event) {

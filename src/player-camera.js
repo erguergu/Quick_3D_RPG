@@ -21,8 +21,9 @@ export const player_camera = (() => {
     }
 
     _CalculateIdealOffset() {
-      const idealBehindOffset = new THREE.Vector3(0, 10, -17);
+      const idealBehindOffset = new THREE.Vector3(0, 5, -17);
       if (this._CharacterController) {
+        idealBehindOffset.z = -this._CharacterController._CameraDistance;
         if (this._CharacterController._IsFreeLook) {
           idealBehindOffset.applyQuaternion(this._CharacterController._FreeLookQuaternion);
         } else {

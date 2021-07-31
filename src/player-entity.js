@@ -45,6 +45,7 @@ export const player_entity = (() => {
     _Init(params) {
       this._params = params;
       this._camera = params._camera;
+      this._CameraDistance = 17;
       this._IsFreeLook = false;
       this._WasFreeLook = false;
       this._FollowQuaternion = new THREE.Quaternion();
@@ -174,8 +175,23 @@ export const player_entity = (() => {
       const currentState = this._stateMachine._currentState;
       if (currentState.Name != 'walk' &&
         currentState.Name != 'run' &&
-        currentState.Name != 'idle') {
+        currentState.Name != 'idle' &&
+        currentState.Name != 'attack') {
+          console.log(`The current state is ${currentState.Name} so we can't do movement things.`);
         return;
+      }
+
+      const MAX_CAMERA_DISTANCE = 100;
+      const MIN_CAMERA_DISTANCE = 5;
+
+      if (input._wheelDelta) {
+        this._CameraDistance -= .01 * input._wheelDelta;
+        if (this._CameraDistance > MAX_CAMERA_DISTANCE) {
+          this._CameraDistance = MAX_CAMERA_DISTANCE;
+        } else if (this._CameraDistance < MIN_CAMERA_DISTANCE) {
+          this._CameraDistance = MIN_CAMERA_DISTANCE;
+        }
+        input._wheelDelta = 0;
       }
 
       const velocity = this._velocity;
